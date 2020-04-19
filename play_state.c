@@ -41,6 +41,10 @@ struct PlayStateData{
 
     int current_level;
     int dots[3];
+
+    int key_up;
+
+    int tick_accum;
 };
 static struct PlayStateData *state_data = 0;
 static struct RenderContext *context = 0;
@@ -63,21 +67,62 @@ enum ObjectIds {
     E,
 };
 
+int start_level = 0;
+
 void load_level(int i) {
     struct Level lvl1 = {
         4, 4,
-        0, 0, E, R,
-        R, H, P, R,
+        P, 0, E, H,
+        R, G, Y, R,
         0, G, Y, E,
         0, E, G, E,
     };
     struct Level lvl2 = {
-        6, 2,
-        P, G, E, G, 0, H,
-        0, 0, Y, R, 0, 0,
+        6, 3,
+        P, G, E, G, E, H,
+        R, 0, Y, R, G, 0,
+        E, E, R, 0, E, E,
+    };
+    struct Level dotlvl = {
+        6, 6,
+        E, E, 0, 0, E, E,
+        E, P, Y, Y, 0, E,
+        R, 0, 0, Y, 0, G,
+        0, 0, R, G, 0, 0,
+        E, 0, 0, H, Y, E,
+        E, E, 0, R, E, E,
+    };
+    struct Level ulvl = {
+        6, 7,
+        E, E, E, E, E, H,
+        P, 0, E, E, G, 0,
+        R, Y, 0, E, 0, R,
+        G, R, E, E, Y, G,
+        0, G, E, 0, R, Y,
+        Y, 0, G, G, Y, 0,
+        E, Y, R, 0, 0, E,
+    };
+    struct Level getting_started = {
+        6, 4,
+        P, Y, E, 0, E, E,
+        Y, 0, R, 0, E, E,
+        G, 0, R, Y, G, E,
+        E, E, Y, R, 0, H,
+    };
+    struct Level biglvl = {
+        8, 8,
+        P, Y, E, G, E, H, E, 0,
+        0, 0, G, R, R, 0, R, 0,
+        R, G, E, Y, R, R, 0, R,
+        Y, E, E, R, 0, G, E, Y,
+        Y, G, Y, G, 0, Y, Y, R,
+        E, R, E, R, R, E, E, G,
+        E, E, E, E, Y, G, Y, 0,
+        E, E, E, E, 0, G, R, E,
     };
     struct Level* lvls[] = {
-        &lvl1, &lvl2,
+         //&lvl3,
+        &lvl1, &lvl2, &dotlvl, &getting_started, &ulvl, &biglvl,
     };
     int num_levels = sizeof(lvls) / sizeof(*lvls);
     i = i % num_levels;
@@ -131,7 +176,8 @@ static void init_game(struct GameData *data, void *argument, int parent_state)
     state_data->main_frame_data = frame_data_new();
     state_data->context->frame_data = state_data->main_frame_data;
     
-    load_level(0);
+    state_data->current_level = start_level;
+    load_level(state_data->current_level);
     grass_sprite = init_sprite("sprites/grass", data);
     get_sprite_size(grass_sprite, &tile_w, &tile_h, data);
     tile_w *= 0.87;
@@ -159,6 +205,8 @@ static void destroy_game(struct GameData *data)
 static int update_game(int ticks, struct InputState input_state,
     struct GameData* data)
 {
+    state_data->tick_accum += ticks;
+    float anim_t = (float)state_data->tick_accum / (float)TICKS_PER_SECOND;
     float dt = (float)ticks/(float)TICKS_PER_SECOND;
     state_data = get_custom_data_pointer(data);
     context = state_data->context;
@@ -174,18 +222,28 @@ static int update_game(int ticks, struct InputState input_state,
     int w = lvl->w;
     int h = lvl->h;
 
+    int key_up = 1;
     if (os_is_key_down(KEY_UP)) {
-        state_data->next_move = DIR_N;
+        if(state_data->key_up)
+			state_data->next_move = DIR_N;
+        key_up = 0;
     }
     if (os_is_key_down(KEY_DOWN)) {
-        state_data->next_move = DIR_S;
+        if(state_data->key_up)
+			state_data->next_move = DIR_S;
+        key_up = 0;
     }
     if (os_is_key_down(KEY_LEFT)) {
-        state_data->next_move = DIR_W;
+        if(state_data->key_up)
+			state_data->next_move = DIR_W;
+        key_up = 0;
     }
     if (os_is_key_down(KEY_RIGHT)) {
-        state_data->next_move = DIR_E;
+        if(state_data->key_up)
+			state_data->next_move = DIR_E;
+        key_up = 0;
     }
+    if (key_up) state_data->key_up = 1;
 
     for (int i = 0; i < input_state.num_keys_typed; i++) {
         switch (input_state.keys_typed[i]) {
@@ -197,12 +255,13 @@ static int update_game(int ticks, struct InputState input_state,
     }
 
 
-    if (state_data->move_t <= 0.f && state_data->next_move) {
+    if (state_data->move_t <= 0.f && state_data->next_move && state_data->key_up) {
         int dir = state_data->next_move;
         int tx = state_data->player_x + dir_x[dir];
         int ty = state_data->player_y + dir_y[dir];
         int obj = lvl->objects[tx + ty*w];
         if (obj != E && tx >= 0 && ty >=0 && tx < w && ty < h) {
+			state_data->key_up = 0;
 			state_data->player_target_x = tx;
 			state_data->player_target_y = ty;
 			state_data->move_t = 1.f;
@@ -316,8 +375,9 @@ static int update_game(int ticks, struct InputState input_state,
     float x_min, y_min, x_max, y_max;
     get_window_extents(&x_min, &x_max, &y_min, &y_max, data);
     for (int col = R; col <= G; col++) {
-        float py = y_max - 0.1f;
         for (int i = 0; i < 3; i++) {
+			float py = y_max - 0.1f;
+            py += 0.003f*sinf((anim_t + (float)i*0.2f + (float)col*0.7f) * 3.3f);
 			float px = i*0.08 + x_min;
             if (col == G) px = i*0.09f + x_max - 3.f*0.09f;
             if (col == Y) px = i*0.09f + 0.5f*(x_max + x_min) - 1.5f*0.09f;

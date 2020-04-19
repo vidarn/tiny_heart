@@ -1,0 +1,6 @@
+[submodule "libs/satin"]
+	path = libs/satin
+	url = git@github.com:vidarn/satin.git
+[submodule "libs/vlib"]
+	path = libs/vlib
+	url = git@github.com:vidarn/vlib.git

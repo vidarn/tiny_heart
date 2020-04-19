@@ -38,6 +38,9 @@ struct PlayStateData{
     int player_target_x, player_target_y;
     float move_t;
     int next_move;
+
+    int current_level;
+    int dots[3];
 };
 static struct PlayStateData *state_data = 0;
 static struct RenderContext *context = 0;
@@ -46,6 +49,8 @@ int grass_sprite = 0;
 int hole_sprite = 0;
 int player_sprite = 0;
 int flower_sprites[3] = { 0 };
+int dot_sprites[3] = { 0 };
+int slot_sprites[3] = { 0 };
 float tile_w = 0.f;
 float tile_h = 0.f;
 
@@ -68,19 +73,15 @@ void load_level(int i) {
     };
     struct Level lvl2 = {
         6, 2,
-        0, 0, E, R, P, H,
-        0, 0, Y, 0, 0, 0,
+        P, G, E, G, 0, H,
+        0, 0, Y, R, 0, 0,
     };
-    struct Level lvl3 = {
-        1, 6,
-        0, 
-        R, 
-        0, 
-        P, 
-        0, 
-        0, 
+    struct Level* lvls[] = {
+        &lvl1, &lvl2,
     };
-    struct Level* lvl = &lvl1;
+    int num_levels = sizeof(lvls) / sizeof(*lvls);
+    i = i % num_levels;
+    struct Level* lvl = lvls[i];
     state_data->level = calloc(1, sizeof(struct Level));
     memcpy(state_data->level, lvl, sizeof(struct Level));
     for (int y = 0; y < lvl->h; y++) {
@@ -94,6 +95,9 @@ void load_level(int i) {
             }
         }
     }
+    state_data->dots[0] = 3;
+    state_data->dots[1] = 3;
+    state_data->dots[2] = 3;
 }
 
 int init_sprite(const char* path, struct GameData* data) {
@@ -137,6 +141,12 @@ static void init_game(struct GameData *data, void *argument, int parent_state)
     flower_sprites[0] = init_sprite("sprites/red_flower", data);
     flower_sprites[1] = init_sprite("sprites/yellow_flower", data);
     flower_sprites[2] = init_sprite("sprites/green_flower", data);
+    dot_sprites[0] = init_sprite("sprites/red_dot", data);
+    dot_sprites[1] = init_sprite("sprites/yellow_dot", data);
+    dot_sprites[2] = init_sprite("sprites/green_dot", data);
+    slot_sprites[0] = init_sprite("sprites/red_slot", data);
+    slot_sprites[1] = init_sprite("sprites/yellow_slot", data);
+    slot_sprites[2] = init_sprite("sprites/green_slot", data);
 }
 
 static void destroy_game(struct GameData *data)
@@ -177,6 +187,15 @@ static int update_game(int ticks, struct InputState input_state,
         state_data->next_move = DIR_E;
     }
 
+    for (int i = 0; i < input_state.num_keys_typed; i++) {
+        switch (input_state.keys_typed[i]) {
+        case 'r':
+        case 'R':
+            load_level(state_data->current_level);
+            break;
+        }
+    }
+
 
     if (state_data->move_t <= 0.f && state_data->next_move) {
         int dir = state_data->next_move;
@@ -194,14 +213,34 @@ static int update_game(int ticks, struct InputState input_state,
     if (state_data->move_t > 0.f) {
 		state_data->next_move = DIR_NONE;
         state_data->move_t -= 6.f*dt;
+		if (state_data->move_t <= 0.f) {
+			state_data->player_x = state_data->player_target_x;
+			state_data->player_y = state_data->player_target_y;
+			int obj = lvl->objects[state_data->player_x + state_data->player_y*w];
+			lvl->objects[state_data->player_x + state_data->player_y*w] = P;
+			state_data->move_t = 0.f;
+            for (int i = 0; i < 3; i++) {
+                state_data->dots[i]--;
+            }
+			switch (obj) {
+			case H:
+				load_level(++state_data->current_level);
+                return 0;
+			case R:
+			case Y:
+			case G:
+				state_data->dots[obj - 1] = 3;
+				break;
+			}
+            for (int i = 0; i < 3; i++) {
+                if (state_data->dots[i] < 0) {
+                    load_level(state_data->current_level);
+                    return 0;
+                }
+            }
+		}
     }
 
-	if (state_data->move_t <= 0.f) {
-		state_data->player_x = state_data->player_target_x;
-		state_data->player_y = state_data->player_target_y;
-		lvl->objects[state_data->player_x + state_data->player_y*w] = P;
-		state_data->move_t = 0.f;
-	}
 
     float map_w = (float)w * tile_w;
     float map_h = (float)h * tile_h;
@@ -270,6 +309,24 @@ static int update_game(int ticks, struct InputState input_state,
         py -= tile_h * 0.2f * sinf(t * 3.14f);
 		py = tile_h * (float)(h - 1) - py;
 		render_sprite_screen(player_sprite, px - 0.03f, py + 0.2f, context);
+    }
+
+    context->camera_2d = get_identity_matrix3();
+
+    float x_min, y_min, x_max, y_max;
+    get_window_extents(&x_min, &x_max, &y_min, &y_max, data);
+    for (int col = R; col <= G; col++) {
+        float py = y_max - 0.1f;
+        for (int i = 0; i < 3; i++) {
+			float px = i*0.08 + x_min;
+            if (col == G) px = i*0.09f + x_max - 3.f*0.09f;
+            if (col == Y) px = i*0.09f + 0.5f*(x_max + x_min) - 1.5f*0.09f;
+            if (i >= state_data->dots[col - 1]) {
+                render_sprite_screen(slot_sprites[col - 1], px, py, context);
+            } else {
+                render_sprite_screen(dot_sprites[col - 1], px, py, context);
+            }
+        }
     }
 
 

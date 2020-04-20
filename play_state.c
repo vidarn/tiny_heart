@@ -58,6 +58,7 @@ struct PlayStateData{
     float start_fade_t;
     float death_fade_t;
     float screen_anim_t;
+    int end;
 
     int key_up;
 
@@ -67,13 +68,15 @@ static struct PlayStateData *state_data = 0;
 static struct RenderContext *context = 0;
 
 const char* messages[] = {
-    "This is Mimmi, a tiny creature.\nTiny creatures have tiny hearts,\nbeating very fast.",
+    "You did it!\n Thanks to you, the friends\n are reunited at last.",
+    "This little creature is Mimmi.\nShe has a tiny heart,\nbeating very fast.",
     "Mimmi's heart is aching,\nshe has lost her friend.",
     "Please help her by guiding her\nto the tunnel at the end\n of each level.",
     "Tiny creatures must eat often.\nIf she runs out of nutrients,\nmimmi will collapse.",
     "Make sure she eats flowers\nto keep her strength up.",
 };
 int num_messages = sizeof(messages) / sizeof(*messages);
+
 
 int grass_sprite = 0;
 int hole_sprite = 0;
@@ -83,6 +86,7 @@ int dot_sprites[3] = { 0 };
 int slot_sprites[3] = { 0 };
 int snail_sprites[2] = { 0 };
 int buddy_sprite = 0;
+int heart_sprite = 0;
 int message_sprite = 0;
 int message_font = 0;
 float tile_w = 0.f;
@@ -179,13 +183,24 @@ void load_level(int i) {
         E, E, E, E, Y, G, Y, 0,
         E, E, E, E, 0, G, R, E,
     };
+    struct Level endlvl = {
+        4,2,
+        0,P,0,0,
+        E,Y,B,0,
+    };
     struct Level* lvls[] = {
-         //&biglvl,
-        &lvl1, &lvl2, &dotlvl, &getting_started, &snaillvl, &ulvl, &snail2lvl, &intermediatelvl, &biglvl,
+        &lvl1,
+        &lvl2, &dotlvl, &getting_started, &snaillvl, &ulvl, &snail2lvl, &intermediatelvl, &biglvl,
+        &endlvl,
     };
     int num_levels = sizeof(lvls) / sizeof(*lvls);
     i = i % num_levels;
     struct Level* lvl = lvls[i];
+    if (lvl == &endlvl) {
+        state_data->message_i = 0;
+        state_data->start_fade_t = 1.f;
+        state_data->end = 1;
+    }
     state_data->level = calloc(1, sizeof(struct Level));
     memcpy(state_data->level, lvl, sizeof(struct Level));
     state_data->num_snails = 0;
@@ -214,7 +229,8 @@ void load_level(int i) {
     state_data->dots[2] = 3;
 }
 
-int init_sprite(const char* path, struct GameData* data) {
+int init_sprite(const char* path, struct GameData* data)
+{
     FILE *fp = open_file(path, ".png", "rb", data);
     if (fp) {
         int w, h, c;
@@ -271,11 +287,12 @@ static void init_game(struct GameData *data, void *argument, int parent_state)
     snail_sprites[0] = init_sprite("sprites/snail_shell", data);
     snail_sprites[1] = init_sprite("sprites/snail", data);
     buddy_sprite = init_sprite("sprites/buddy", data);
+    heart_sprite = init_sprite("sprites/heart", data);
 
     message_sprite = init_sprite("sprites/message", data);
     message_font = load_font("fonts/BalooBhaina2-Regular", 100.f, data);
 
-    //state_data->message_i = 16;
+    state_data->message_i = 1;
 }
 
 static void destroy_game(struct GameData *data)
@@ -309,6 +326,9 @@ static int update_game(int ticks, struct InputState input_state,
         if (state_data->message_i < num_messages) {
             if (input_state.num_keys_typed > 0) {
                 state_data->message_i++;
+                if (state_data->message_i == 1) {
+                    state_data->message_i = num_messages;
+                }
             }
         }
         else {
@@ -325,24 +345,24 @@ static int update_game(int ticks, struct InputState input_state,
 			load_level(++state_data->current_level);
         }
     }
-    else {
+    else if(!state_data->end) {
         int key_up = 1;
-        if (os_is_key_down(KEY_UP)) {
+        if (os_is_key_down(KEY_UP) || os_is_key_down('W') || os_is_key_down('K') || os_is_key_down('Z')) {
             if (state_data->key_up)
                 state_data->next_move = DIR_N;
             key_up = 0;
         }
-        if (os_is_key_down(KEY_DOWN)) {
+        if (os_is_key_down(KEY_DOWN) || os_is_key_down('S') || os_is_key_down('J')) {
             if (state_data->key_up)
                 state_data->next_move = DIR_S;
             key_up = 0;
         }
-        if (os_is_key_down(KEY_LEFT)) {
+        if (os_is_key_down(KEY_LEFT) || os_is_key_down('A') || os_is_key_down('H') || os_is_key_down('Q')) {
             if (state_data->key_up)
                 state_data->next_move = DIR_W;
             key_up = 0;
         }
-        if (os_is_key_down(KEY_RIGHT)) {
+        if (os_is_key_down(KEY_RIGHT) || os_is_key_down('D')  || os_is_key_down('L')) {
             if (state_data->key_up)
                 state_data->next_move = DIR_E;
             key_up = 0;
@@ -403,6 +423,7 @@ static int update_game(int ticks, struct InputState input_state,
                 int skip = 0;
                 switch (obj) {
                 case H:
+                case B:
                     state_data->screen_anim_t = 2.f;
                     skip = 1;
                     break;
@@ -566,24 +587,28 @@ static int update_game(int ticks, struct InputState input_state,
         render_sprite_screen(message_sprite, 0.f, 0.4f, context);
         switch (state_data->message_i) {
         case 0:
-            context->camera_2d = get_scale_matrix3(0.4f);
-            render_sprite_screen(player_sprite, 0.25f, 1.25f, context);
+            context->camera_2d = get_scale_matrix3(0.65f);
+            render_sprite_screen(heart_sprite, 0.18f, 0.78f, context);
             break;
         case 1:
             context->camera_2d = get_scale_matrix3(0.4f);
-            render_sprite_screen(buddy_sprite, 0.26f, 1.25f, context);
+            render_sprite_screen(player_sprite, 0.25f, 1.25f, context);
             break;
         case 2:
+            context->camera_2d = get_scale_matrix3(0.4f);
+            render_sprite_screen(buddy_sprite, 0.26f, 1.25f, context);
+            break;
+        case 3:
             context->camera_2d = get_scale_matrix3(0.3f);
             render_sprite_screen(hole_sprite, 0.45f, 1.65f, context);
             break;
-        case 3:
+        case 4:
             context->camera_2d = get_scale_matrix3(0.7f);
             render_sprite_screen(dot_sprites[0], 0.18f, 0.74f, context);
             render_sprite_screen(dot_sprites[1], 0.30f, 0.74f, context);
             render_sprite_screen(dot_sprites[2], 0.25f, 0.82f, context);
             break;
-        case 4:
+        case 5:
             context->camera_2d = get_scale_matrix3(0.6f);
             render_sprite_screen(flower_sprites[1], 0.23f, 0.85f, context);
             break;

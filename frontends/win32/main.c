@@ -5,6 +5,7 @@
 int reference_resolution = 800;
 float magnification = 1.f;
 
+extern struct GameState title_state;
 extern struct GameState play_state;
 
 int APIENTRY WinMain(_In_ HINSTANCE hInstance,
@@ -14,8 +15,8 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 
-	struct GameState game_states[] = { play_state};
+	struct GameState game_states[] = {title_state, play_state};
 	int res = reference_resolution * magnification;
-	launch_game("Tiny Heart", res, res, 0, 1, 0, game_states, 0, 0);
+	launch_game("Tiny Heart", res, res, 0, 2, 0, game_states, 0, 0);
 	return ERROR_SUCCESS;
 }

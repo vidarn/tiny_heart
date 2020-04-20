@@ -54,12 +54,26 @@ struct PlayStateData{
     int num_snails;
     struct Snail snails[MAX_NUM_SNAILS];
 
+    int message_i;
+    float start_fade_t;
+    float death_fade_t;
+    float screen_anim_t;
+
     int key_up;
 
     int tick_accum;
 };
 static struct PlayStateData *state_data = 0;
 static struct RenderContext *context = 0;
+
+const char* messages[] = {
+    "This is Mimmi, a tiny creature.\nTiny creatures have tiny hearts,\nbeating very fast.",
+    "Mimmi's heart is aching,\nshe has lost her friend.",
+    "Please help her by guiding her\nto the tunnel at the end\n of each level.",
+    "Tiny creatures must eat often.\nIf she runs out of nutrients,\nmimmi will collapse.",
+    "Make sure she eats flowers\nto keep her strength up.",
+};
+int num_messages = sizeof(messages) / sizeof(*messages);
 
 int grass_sprite = 0;
 int hole_sprite = 0;
@@ -68,6 +82,9 @@ int flower_sprites[3] = { 0 };
 int dot_sprites[3] = { 0 };
 int slot_sprites[3] = { 0 };
 int snail_sprites[2] = { 0 };
+int buddy_sprite = 0;
+int message_sprite = 0;
+int message_font = 0;
 float tile_w = 0.f;
 float tile_h = 0.f;
 
@@ -80,6 +97,7 @@ enum ObjectIds {
     E,
     S,
     SNAIL,
+    B,
 };
 
 int start_level = 0;
@@ -152,7 +170,7 @@ void load_level(int i) {
     };
     struct Level biglvl = {
         8, 8,
-        P, Y, E, G, E, H, E, 0,
+        P, Y, E, G, E, B, 0, 0,
         0, 0, G, R, R, 0, R, 0,
         R, G, E, Y, R, R, 0, R,
         Y, E, E, R, 0, G, E, Y,
@@ -162,7 +180,7 @@ void load_level(int i) {
         E, E, E, E, 0, G, R, E,
     };
     struct Level* lvls[] = {
-         //&intermediatelvl,
+         //&biglvl,
         &lvl1, &lvl2, &dotlvl, &getting_started, &snaillvl, &ulvl, &snail2lvl, &intermediatelvl, &biglvl,
     };
     int num_levels = sizeof(lvls) / sizeof(*lvls);
@@ -230,6 +248,8 @@ static void init_game(struct GameData *data, void *argument, int parent_state)
     state_data->context = calloc(1,sizeof(struct RenderContext));
     state_data->main_frame_data = frame_data_new();
     state_data->context->frame_data = state_data->main_frame_data;
+
+    state_data->start_fade_t = 1.f;
     
     state_data->current_level = start_level;
     load_level(state_data->current_level);
@@ -250,6 +270,12 @@ static void init_game(struct GameData *data, void *argument, int parent_state)
     slot_sprites[2] = init_sprite("sprites/green_slot", data);
     snail_sprites[0] = init_sprite("sprites/snail_shell", data);
     snail_sprites[1] = init_sprite("sprites/snail", data);
+    buddy_sprite = init_sprite("sprites/buddy", data);
+
+    message_sprite = init_sprite("sprites/message", data);
+    message_font = load_font("fonts/BalooBhaina2-Regular", 100.f, data);
+
+    //state_data->message_i = 16;
 }
 
 static void destroy_game(struct GameData *data)
@@ -279,105 +305,133 @@ static int update_game(int ticks, struct InputState input_state,
     int w = lvl->w;
     int h = lvl->h;
 
-    int key_up = 1;
-    if (os_is_key_down(KEY_UP)) {
-        if(state_data->key_up)
-			state_data->next_move = DIR_N;
-        key_up = 0;
-    }
-    if (os_is_key_down(KEY_DOWN)) {
-        if(state_data->key_up)
-			state_data->next_move = DIR_S;
-        key_up = 0;
-    }
-    if (os_is_key_down(KEY_LEFT)) {
-        if(state_data->key_up)
-			state_data->next_move = DIR_W;
-        key_up = 0;
-    }
-    if (os_is_key_down(KEY_RIGHT)) {
-        if(state_data->key_up)
-			state_data->next_move = DIR_E;
-        key_up = 0;
-    }
-    if (key_up) state_data->key_up = 1;
-
-    for (int i = 0; i < input_state.num_keys_typed; i++) {
-        switch (input_state.keys_typed[i]) {
-        case 'r':
-        case 'R':
-            load_level(state_data->current_level);
-            break;
+    if (state_data->start_fade_t > 0.f) {
+        if (state_data->message_i < num_messages) {
+            if (input_state.num_keys_typed > 0) {
+                state_data->message_i++;
+            }
+        }
+        else {
+            state_data->start_fade_t -= dt;
         }
     }
+    else if (state_data->death_fade_t > 0.f) {
+        state_data->death_fade_t -= dt;
+    }
+    else if (state_data->screen_anim_t > 0.f) {
+        float prev = state_data->screen_anim_t;
+        state_data->screen_anim_t -= dt*2.f;
+        if (prev > 1.f && state_data->screen_anim_t < 1.f) {
+			load_level(++state_data->current_level);
+        }
+    }
+    else {
+        int key_up = 1;
+        if (os_is_key_down(KEY_UP)) {
+            if (state_data->key_up)
+                state_data->next_move = DIR_N;
+            key_up = 0;
+        }
+        if (os_is_key_down(KEY_DOWN)) {
+            if (state_data->key_up)
+                state_data->next_move = DIR_S;
+            key_up = 0;
+        }
+        if (os_is_key_down(KEY_LEFT)) {
+            if (state_data->key_up)
+                state_data->next_move = DIR_W;
+            key_up = 0;
+        }
+        if (os_is_key_down(KEY_RIGHT)) {
+            if (state_data->key_up)
+                state_data->next_move = DIR_E;
+            key_up = 0;
+        }
+        if (key_up) state_data->key_up = 1;
+
+        for (int i = 0; i < input_state.num_keys_typed; i++) {
+            switch (input_state.keys_typed[i]) {
+            case 'r':
+            case 'R':
+                load_level(state_data->current_level);
+                break;
+            }
+        }
 
 
-    if (state_data->move_t <= 0.f && state_data->next_move && state_data->key_up) {
-        int dir = state_data->next_move;
-        int tx = state_data->player_x + dir_x[dir];
-        int ty = state_data->player_y + dir_y[dir];
-        int obj = lvl->objects[tx + ty*w];
-        if (obj != E && obj != S && tx >= 0 && ty >=0 && tx < w && ty < h) {
-			state_data->key_up = 0;
-			state_data->player_target_x = tx;
-			state_data->player_target_y = ty;
-			state_data->move_t = 1.f;
-			lvl->objects[state_data->player_x + state_data->player_y*w] = 0;
+        if (state_data->move_t <= 0.f && state_data->next_move && state_data->key_up) {
+            int dir = state_data->next_move;
+            int tx = state_data->player_x + dir_x[dir];
+            int ty = state_data->player_y + dir_y[dir];
+            int obj = lvl->objects[tx + ty * w];
+            if (obj != E && obj != S && tx >= 0 && ty >= 0 && tx < w && ty < h) {
+                state_data->key_up = 0;
+                state_data->player_target_x = tx;
+                state_data->player_target_y = ty;
+                state_data->move_t = 1.f;
+                lvl->objects[state_data->player_x + state_data->player_y * w] = 0;
 
-			for (int i = 0; i < state_data->num_snails; i++) {
-				struct Snail* s = state_data->snails + i;
-                if (s->awake) {
-                    int tx = s->px + dir_x[s->dir];
-                    int ty = s->py + dir_y[s->dir];
-					int obj = lvl->objects[tx + ty*w];
-                    if (obj != E && obj != S && obj != SNAIL && tx >= 0 && ty >= 0 && tx < w && ty < h) {
-                        s->tx = tx;
-                        s->ty = ty;
-                        lvl->objects[s->px + s->py * w] = 0;
+                for (int i = 0; i < state_data->num_snails; i++) {
+                    struct Snail* s = state_data->snails + i;
+                    if (s->awake) {
+                        int tx = s->px + dir_x[s->dir];
+                        int ty = s->py + dir_y[s->dir];
+                        int obj = lvl->objects[tx + ty * w];
+                        if (obj != E && obj != S && obj != SNAIL && tx >= 0 && ty >= 0 && tx < w && ty < h) {
+                            s->tx = tx;
+                            s->ty = ty;
+                            lvl->objects[s->px + s->py * w] = 0;
+                        }
+                    }
+                    s->awake = 1;
+                }
+            }
+        }
+
+        if (state_data->move_t > 0.f) {
+            state_data->next_move = DIR_NONE;
+            state_data->move_t -= 6.f * dt;
+            if (state_data->move_t <= 0.f) {
+                state_data->player_x = state_data->player_target_x;
+                state_data->player_y = state_data->player_target_y;
+                int obj = lvl->objects[state_data->player_x + state_data->player_y * w];
+                lvl->objects[state_data->player_x + state_data->player_y * w] = P;
+                state_data->move_t = 0.f;
+                for (int i = 0; i < 3; i++) {
+                    state_data->dots[i]--;
+                }
+                int skip = 0;
+                switch (obj) {
+                case H:
+                    state_data->screen_anim_t = 2.f;
+                    skip = 1;
+                    break;
+                case R:
+                case Y:
+                case G:
+                    state_data->dots[obj - 1] = 3;
+                    break;
+                }
+                
+                if (!skip) {
+                    for (int i = 0; i < 3; i++) {
+                        if (state_data->dots[i] < 0) {
+                            load_level(state_data->current_level);
+                            state_data->death_fade_t = 1.f;
+                            return 0;
+                        }
+                    }
+
+                    for (int i = 0; i < state_data->num_snails; i++) {
+                        struct Snail* s = state_data->snails + i;
+                        s->px = s->tx;
+                        s->py = s->ty;
+                        lvl->objects[s->px + s->py * w] = SNAIL;
                     }
                 }
-				s->awake = 1;
-			}
+
+            }
         }
-    }
-
-    if (state_data->move_t > 0.f) {
-		state_data->next_move = DIR_NONE;
-        state_data->move_t -= 6.f*dt;
-		if (state_data->move_t <= 0.f) {
-			state_data->player_x = state_data->player_target_x;
-			state_data->player_y = state_data->player_target_y;
-			int obj = lvl->objects[state_data->player_x + state_data->player_y*w];
-			lvl->objects[state_data->player_x + state_data->player_y*w] = P;
-			state_data->move_t = 0.f;
-            for (int i = 0; i < 3; i++) {
-                state_data->dots[i]--;
-            }
-			switch (obj) {
-			case H:
-				load_level(++state_data->current_level);
-                return 0;
-			case R:
-			case Y:
-			case G:
-				state_data->dots[obj - 1] = 3;
-				break;
-			}
-            for (int i = 0; i < 3; i++) {
-                if (state_data->dots[i] < 0) {
-                    load_level(state_data->current_level);
-                    return 0;
-                }
-            }
-
-			for (int i = 0; i < state_data->num_snails; i++) {
-				struct Snail* s = state_data->snails + i;
-				s->px = s->tx;
-				s->py = s->ty;
-				lvl->objects[s->px + s->py * w] = SNAIL;
-			}
-
-		}
     }
 
 
@@ -403,8 +457,16 @@ static int update_game(int ticks, struct InputState input_state,
 			get_scale_matrix3(1.f / map_size)
 		)
 	);
-    context->view_3d = get_identity_matrix4();
-    context->view_3d = get_identity_matrix4();
+    if (state_data->screen_anim_t > 1.f) {
+        float t = 2.f - state_data->screen_anim_t;
+        t *= t;
+        context->camera_2d = multiply_matrix3(context->camera_2d, get_translation_matrix3(-t, 0.f));
+    }
+    else if (state_data->screen_anim_t > 0.f) {
+        float t = state_data->screen_anim_t;
+        t *= t;
+        context->camera_2d = multiply_matrix3(context->camera_2d, get_translation_matrix3(t, 0.f));
+    }
 
 	{
 		float py = tile_h * (float)(h - 1);
@@ -440,6 +502,9 @@ static int update_game(int ticks, struct InputState input_state,
                 case Y:
                 case G:
                     render_sprite_screen(flower_sprites[obj - 1], px + 0.06f, pyy + 0.3f, context);
+                    break;
+                case B:
+                    render_sprite_screen(buddy_sprite, px + 0.06f, pyy + 0.2f, context);
                     break;
                 }
 
@@ -484,6 +549,59 @@ static int update_game(int ticks, struct InputState input_state,
             } else {
                 render_sprite_screen(dot_sprites[col - 1], px, py, context);
             }
+        }
+    }
+
+    if (state_data->start_fade_t > 0.f) {
+        struct Color col = { 0.f,0.f,0.f,0.6f*state_data->start_fade_t };
+        render_rect_fill_screen(x_min, y_min, x_max, y_max, col, context);
+    }
+    if (state_data->death_fade_t > 0.f) {
+        struct Color col = { 0.f,0.f,0.f,1.f*state_data->death_fade_t };
+        render_rect_fill_screen(x_min, y_min, x_max, y_max, col, context);
+    }
+
+    if (state_data->message_i < num_messages) {
+
+        render_sprite_screen(message_sprite, 0.f, 0.4f, context);
+        switch (state_data->message_i) {
+        case 0:
+            context->camera_2d = get_scale_matrix3(0.4f);
+            render_sprite_screen(player_sprite, 0.25f, 1.25f, context);
+            break;
+        case 1:
+            context->camera_2d = get_scale_matrix3(0.4f);
+            render_sprite_screen(buddy_sprite, 0.26f, 1.25f, context);
+            break;
+        case 2:
+            context->camera_2d = get_scale_matrix3(0.3f);
+            render_sprite_screen(hole_sprite, 0.45f, 1.65f, context);
+            break;
+        case 3:
+            context->camera_2d = get_scale_matrix3(0.7f);
+            render_sprite_screen(dot_sprites[0], 0.18f, 0.74f, context);
+            render_sprite_screen(dot_sprites[1], 0.30f, 0.74f, context);
+            render_sprite_screen(dot_sprites[2], 0.25f, 0.82f, context);
+            break;
+        case 4:
+            context->camera_2d = get_scale_matrix3(0.6f);
+            render_sprite_screen(flower_sprites[1], 0.23f, 0.85f, context);
+            break;
+        }
+		context->camera_2d = get_scale_matrix3(1.2f);
+        float py = 0.52f;
+        char* message = messages[state_data->message_i];
+        char* m = message;
+        while (*m != 0) {
+            float px = 0.27f;
+            int n = 0;
+            while (*m != 0 && *m != '\n') {
+                m++;
+                n++;
+            }
+            render_string_screen_n(message, n, message_font, &px, &py, color_black, context);
+            if(*m != 0) message = ++m;
+            py -= 0.05f;
         }
     }
 

@@ -16,6 +16,6 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 
 	struct GameState game_states[] = { play_state};
 	int res = reference_resolution * magnification;
-	launch_game("LD 46", res, res, 1, 1, 0, game_states, 0, 0);
+	launch_game("Tiny Heart", res, res, 0, 1, 0, game_states, 0, 0);
 	return ERROR_SUCCESS;
 }

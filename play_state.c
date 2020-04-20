@@ -29,6 +29,15 @@ int dir_y[] = {
     0,-1,0,1,0
 };
 
+#define MAX_NUM_SNAILS 32
+struct Snail {
+    int awake;
+    int dir;
+    int px, py;
+    int tx, ty;
+    int anim_y;
+};
+
 struct PlayStateData{
     struct RenderContext *context;
     struct FrameData *main_frame_data;
@@ -41,6 +50,9 @@ struct PlayStateData{
 
     int current_level;
     int dots[3];
+
+    int num_snails;
+    struct Snail snails[MAX_NUM_SNAILS];
 
     int key_up;
 
@@ -55,6 +67,7 @@ int player_sprite = 0;
 int flower_sprites[3] = { 0 };
 int dot_sprites[3] = { 0 };
 int slot_sprites[3] = { 0 };
+int snail_sprites[2] = { 0 };
 float tile_w = 0.f;
 float tile_h = 0.f;
 
@@ -65,6 +78,8 @@ enum ObjectIds {
     P,
     H,
     E,
+    S,
+    SNAIL,
 };
 
 int start_level = 0;
@@ -81,6 +96,12 @@ void load_level(int i) {
         6, 3,
         P, G, E, G, E, H,
         R, 0, Y, R, G, 0,
+        E, E, R, 0, E, E,
+    };
+    struct Level lvl3 = {
+        6, 3,
+        P, G, E, G, E, H,
+        R, 0, Y, S, G, 0,
         E, E, R, 0, E, E,
     };
     struct Level dotlvl = {
@@ -121,14 +142,15 @@ void load_level(int i) {
         E, E, E, E, 0, G, R, E,
     };
     struct Level* lvls[] = {
-         //&lvl3,
-        &lvl1, &lvl2, &dotlvl, &getting_started, &ulvl, &biglvl,
+         &lvl3,
+        //&lvl1, &lvl2, &dotlvl, &getting_started, &ulvl, &biglvl,
     };
     int num_levels = sizeof(lvls) / sizeof(*lvls);
     i = i % num_levels;
     struct Level* lvl = lvls[i];
     state_data->level = calloc(1, sizeof(struct Level));
     memcpy(state_data->level, lvl, sizeof(struct Level));
+    state_data->num_snails = 0;
     for (int y = 0; y < lvl->h; y++) {
         for (int x = 0; x < lvl->w; x++) {
             int obj = lvl->objects[x + y * lvl->w];
@@ -137,6 +159,15 @@ void load_level(int i) {
                 state_data->player_y = y;
                 state_data->player_target_x = x;
                 state_data->player_target_y = y;
+            }
+            if (obj == S) {
+                int snail_i = state_data->num_snails++;
+                state_data->snails[snail_i].awake = 0;
+                state_data->snails[snail_i].dir = DIR_E;
+                state_data->snails[snail_i].px = x;
+                state_data->snails[snail_i].py = y;
+                state_data->snails[snail_i].tx = x;
+                state_data->snails[snail_i].ty = y;
             }
         }
     }
@@ -168,6 +199,10 @@ int init_sprite(const char* path, struct GameData* data) {
     return -1;
 }
 
+float tile_height(float t, float x, float y) {
+    return 0.03f*sinf(t + 0.3f*x + y*0.3f);
+}
+
 static void init_game(struct GameData *data, void *argument, int parent_state)
 {
     state_data = calloc(1,sizeof(struct PlayStateData));
@@ -193,6 +228,8 @@ static void init_game(struct GameData *data, void *argument, int parent_state)
     slot_sprites[0] = init_sprite("sprites/red_slot", data);
     slot_sprites[1] = init_sprite("sprites/yellow_slot", data);
     slot_sprites[2] = init_sprite("sprites/green_slot", data);
+    snail_sprites[0] = init_sprite("sprites/snail_shell", data);
+    snail_sprites[1] = init_sprite("sprites/snail", data);
 }
 
 static void destroy_game(struct GameData *data)
@@ -260,12 +297,27 @@ static int update_game(int ticks, struct InputState input_state,
         int tx = state_data->player_x + dir_x[dir];
         int ty = state_data->player_y + dir_y[dir];
         int obj = lvl->objects[tx + ty*w];
-        if (obj != E && tx >= 0 && ty >=0 && tx < w && ty < h) {
+        if (obj != E && obj != S && obj != SNAIL && tx >= 0 && ty >=0 && tx < w && ty < h) {
 			state_data->key_up = 0;
 			state_data->player_target_x = tx;
 			state_data->player_target_y = ty;
 			state_data->move_t = 1.f;
 			lvl->objects[state_data->player_x + state_data->player_y*w] = 0;
+
+			for (int i = 0; i < state_data->num_snails; i++) {
+				struct Snail* s = state_data->snails + i;
+                if (s->awake) {
+                    int tx = s->px + dir_x[s->dir];
+                    int ty = s->py + dir_y[s->dir];
+					int obj = lvl->objects[tx + ty*w];
+                    if (obj != E && obj != S && obj != SNAIL && tx >= 0 && ty >= 0 && tx < w && ty < h) {
+                        s->tx = tx;
+                        s->ty = ty;
+                        lvl->objects[s->px + s->py * w] = 0;
+                    }
+                }
+				s->awake = 1;
+			}
         }
     }
 
@@ -297,8 +349,17 @@ static int update_game(int ticks, struct InputState input_state,
                     return 0;
                 }
             }
+
+			for (int i = 0; i < state_data->num_snails; i++) {
+				struct Snail* s = state_data->snails + i;
+				s->px = s->tx;
+				s->py = s->ty;
+				lvl->objects[s->px + s->py * w] = SNAIL;
+			}
+
 		}
     }
+
 
 
     float map_w = (float)w * tile_w;
@@ -331,43 +392,60 @@ static int update_game(int ticks, struct InputState input_state,
 			float px = 0.f;
 			for (int x = 0; x < w; x++) {
                 int obj = lvl->objects[x + y * w];
+                float pyy = py + tile_height(anim_t, px, py);
                 if(obj == H)
-					render_sprite_screen(hole_sprite, px, py, context);
+					render_sprite_screen(hole_sprite, px, pyy, context);
                 else if(obj != E)
-					render_sprite_screen(grass_sprite, px, py, context);
+					render_sprite_screen(grass_sprite, px, pyy, context);
 				px += tile_w;
 			}
 			py -= tile_h;
 		}
 	}
 
+    int player_y = state_data->move_t > 0.5f ? state_data->player_y : state_data->player_target_y;
+    for (int i = 0; i < state_data->num_snails; i++) {
+        struct Snail* snail = state_data->snails + i;
+        snail->anim_y = state_data->move_t > 0.5f ? snail->py : snail->ty;
+    }
 	{
         float py = tile_h * (float)(h - 1);
         for (int y = 0; y < h; y++) {
             float px = 0.f;
             for (int x = 0; x < w; x++) {
+                float pyy = py + tile_height(anim_t, px, py);
                 int obj = lvl->objects[x + y * w];
                 switch (obj) {
                 case R:
                 case Y:
                 case G:
-                    render_sprite_screen(flower_sprites[obj - 1], px + 0.06f, py + 0.3f, context);
+                    render_sprite_screen(flower_sprites[obj - 1], px + 0.06f, pyy + 0.3f, context);
                     break;
                 }
 
                 px += tile_w;
             }
+			float t = state_data->move_t;
+			for (int i = 0; i < state_data->num_snails; i++) {
+				struct Snail* snail = state_data->snails + i;
+                if (snail->anim_y == y) {
+					float px = (t * (float)snail->px + (1.f - t)*(float)snail->tx)*tile_w;
+					float py = (t * (float)snail->py + (1.f - t)*(float)snail->ty)*tile_h;
+					py = tile_h * (float)(h - 1) - py;
+					float pyy = py + tile_height(anim_t, px, py);
+					render_sprite_screen(snail_sprites[snail->awake], px - 0.03f, pyy + 0.2f, context);
+                }
+			}
+            if (player_y == y) {
+				float px = (t * state_data->player_x + (1.f - t)*state_data->player_target_x)*tile_w;
+				float py = (t * state_data->player_y + (1.f - t)*state_data->player_target_y)*tile_h;
+				py -= tile_h * 0.2f * sinf(t * 3.14f);
+				py = tile_h * (float)(h - 1) - py;
+				float pyy = py + tile_height(anim_t, px, py);
+				render_sprite_screen(player_sprite, px - 0.03f, pyy + 0.2f, context);
+            }
             py -= tile_h;
         }
-    }
-
-    {
-        float t = state_data->move_t;
-        float px = (t * state_data->player_x + (1.f - t)*state_data->player_target_x)*tile_w;
-        float py = (t * state_data->player_y + (1.f - t)*state_data->player_target_y)*tile_h;
-        py -= tile_h * 0.2f * sinf(t * 3.14f);
-		py = tile_h * (float)(h - 1) - py;
-		render_sprite_screen(player_sprite, px - 0.03f, py + 0.2f, context);
     }
 
     context->camera_2d = get_identity_matrix3();

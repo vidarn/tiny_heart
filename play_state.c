@@ -98,11 +98,21 @@ void load_level(int i) {
         R, 0, Y, R, G, 0,
         E, E, R, 0, E, E,
     };
-    struct Level lvl3 = {
-        6, 3,
-        P, G, E, G, E, H,
-        R, 0, Y, S, G, 0,
-        E, E, R, 0, E, E,
+    struct Level snaillvl = {
+        6, 4,
+        P, R, E, 0, G, H,
+        Y, S, R, Y, G, R,
+        E, Y, G, E, R, E,
+        E, R, R, G, Y, E,
+    };
+    struct Level snail2lvl = {
+        6, 6,
+        G, 0, R, 0, G, H,
+        0, Y, 0, R, Y, 0,
+        S, R, R, Y, G, Y,
+        0, G, E, G, E, G,
+        S, Y, R, Y, G, R,
+        0, P, 0, E, Y, G,
     };
     struct Level dotlvl = {
         6, 6,
@@ -130,6 +140,16 @@ void load_level(int i) {
         G, 0, R, Y, G, E,
         E, E, Y, R, 0, H,
     };
+    struct Level intermediatelvl = {
+        6, 7,
+        E, 0, R, E, E, 0,
+        P, R, Y, G, 0, G,
+        0, 0, G, E, Y, R,
+        0, R, E, 0, R, H,
+        E, Y, E, Y, E, G,
+        E, G, R, G, Y, 0,
+        E, E, E, Y, R, R,
+    };
     struct Level biglvl = {
         8, 8,
         P, Y, E, G, E, H, E, 0,
@@ -142,8 +162,8 @@ void load_level(int i) {
         E, E, E, E, 0, G, R, E,
     };
     struct Level* lvls[] = {
-         &lvl3,
-        //&lvl1, &lvl2, &dotlvl, &getting_started, &ulvl, &biglvl,
+         //&intermediatelvl,
+        &lvl1, &lvl2, &dotlvl, &getting_started, &snaillvl, &ulvl, &snail2lvl, &intermediatelvl, &biglvl,
     };
     int num_levels = sizeof(lvls) / sizeof(*lvls);
     i = i % num_levels;
@@ -297,7 +317,7 @@ static int update_game(int ticks, struct InputState input_state,
         int tx = state_data->player_x + dir_x[dir];
         int ty = state_data->player_y + dir_y[dir];
         int obj = lvl->objects[tx + ty*w];
-        if (obj != E && obj != S && obj != SNAIL && tx >= 0 && ty >=0 && tx < w && ty < h) {
+        if (obj != E && obj != S && tx >= 0 && ty >=0 && tx < w && ty < h) {
 			state_data->key_up = 0;
 			state_data->player_target_x = tx;
 			state_data->player_target_y = ty;

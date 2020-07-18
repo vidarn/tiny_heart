@@ -615,8 +615,8 @@ static int update_game(int ticks, struct InputState input_state,
         }
 		context->camera_2d = get_scale_matrix3(1.2f);
         float py = 0.52f;
-        char* message = messages[state_data->message_i];
-        char* m = message;
+        const char* message = messages[state_data->message_i];
+        const char* m = message;
         while (*m != 0) {
             float px = 0.27f;
             int n = 0;
@@ -624,7 +624,8 @@ static int update_game(int ticks, struct InputState input_state,
                 m++;
                 n++;
             }
-            render_string_screen_n(message, n, message_font, &px, &py, color_black, context);
+            struct Color col = {0.f,0.f,0.f,1.f};
+            render_string_screen_n(message, n, message_font, &px, &py, col, context);
             if(*m != 0) message = ++m;
             py -= 0.05f;
         }

@@ -31,4 +31,5 @@ set(SATIN_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/satin/data)
 set(DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
 set(GAME_SRC ${CMAKE_CURRENT_SOURCE_DIR}/play_state.c ${CMAKE_CURRENT_SOURCE_DIR}/title_state.c)
 
-add_subdirectory(frontends/win32)
+#add_subdirectory(frontends/win32)
+add_subdirectory(frontends/web)

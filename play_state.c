@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "os/os.h"
 #include "os/win32/key_codes.h"
+#include "window/window.h"
 #include "stb_image.h"
 #include <stdlib.h>
 #include <string.h>
@@ -324,7 +325,7 @@ static int update_game(int ticks, struct InputState input_state,
 
     if (state_data->start_fade_t > 0.f) {
         if (state_data->message_i < num_messages) {
-            if (input_state.num_keys_typed > 0) {
+            if (input_state.num_keys_typed > 0 || input_state.mouse_state == MOUSE_CLICKED) {
                 state_data->message_i++;
                 if (state_data->message_i == 1) {
                     state_data->message_i = num_messages;
@@ -347,22 +348,22 @@ static int update_game(int ticks, struct InputState input_state,
     }
     else if(!state_data->end) {
         int key_up = 1;
-        if (os_is_key_down(KEY_UP) || os_is_key_down('W') || os_is_key_down('K') || os_is_key_down('Z')) {
+        if (window_is_key_down(KEY_UP) || window_is_key_down('W') || window_is_key_down('K') || window_is_key_down('Z')) {
             if (state_data->key_up)
                 state_data->next_move = DIR_N;
             key_up = 0;
         }
-        if (os_is_key_down(KEY_DOWN) || os_is_key_down('S') || os_is_key_down('J')) {
+        if (window_is_key_down(KEY_DOWN) || window_is_key_down('S') || window_is_key_down('J')) {
             if (state_data->key_up)
                 state_data->next_move = DIR_S;
             key_up = 0;
         }
-        if (os_is_key_down(KEY_LEFT) || os_is_key_down('A') || os_is_key_down('H') || os_is_key_down('Q')) {
+        if (window_is_key_down(KEY_LEFT) || window_is_key_down('A') || window_is_key_down('H') || window_is_key_down('Q')) {
             if (state_data->key_up)
                 state_data->next_move = DIR_W;
             key_up = 0;
         }
-        if (os_is_key_down(KEY_RIGHT) || os_is_key_down('D')  || os_is_key_down('L')) {
+        if (window_is_key_down(KEY_RIGHT) || window_is_key_down('D')  || window_is_key_down('L')) {
             if (state_data->key_up)
                 state_data->next_move = DIR_E;
             key_up = 0;
@@ -557,7 +558,7 @@ static int update_game(int ticks, struct InputState input_state,
     context->camera_2d = get_identity_matrix3();
 
     float x_min, y_min, x_max, y_max;
-    get_window_extents(&x_min, &x_max, &y_min, &y_max, data);
+    window_get_extents(&x_min, &x_max, &y_min, &y_max, data);
     for (int col = R; col <= G; col++) {
         for (int i = 0; i < 3; i++) {
 			float py = y_max - 0.1f;

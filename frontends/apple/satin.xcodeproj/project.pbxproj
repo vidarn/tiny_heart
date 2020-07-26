@@ -1,0 +1,448 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1311F43C241FFD1B0051D6BF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311F43B241FFD1B0051D6BF /* AppDelegate.swift */; };
+		1311F43E241FFD1B0051D6BF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311F43D241FFD1B0051D6BF /* ViewController.swift */; };
+		1311F440241FFD1E0051D6BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1311F43F241FFD1E0051D6BF /* Assets.xcassets */; };
+		1311F443241FFD1E0051D6BF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1311F441241FFD1E0051D6BF /* Main.storyboard */; };
+		1311F44B241FFD450051D6BF /* ViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 138FF4CA23B665C80028F056 /* ViewDelegate.swift */; };
+		1311F458241FFEC30051D6BF /* os.m in Sources */ = {isa = PBXBuildFile; fileRef = 1311F457241FFEC30051D6BF /* os.m */; };
+		1311F45A241FFEDB0051D6BF /* window.m in Sources */ = {isa = PBXBuildFile; fileRef = 1311F459241FFEDB0051D6BF /* window.m */; };
+		1311F45C241FFEEA0051D6BF /* engine.c in Sources */ = {isa = PBXBuildFile; fileRef = 1311F45B241FFEEA0051D6BF /* engine.c */; };
+		1311F45E241FFF020051D6BF /* graphics.m in Sources */ = {isa = PBXBuildFile; fileRef = 1311F45D241FFF020051D6BF /* graphics.m */; };
+		1311F460241FFF190051D6BF /* buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 1311F45F241FFF190051D6BF /* buffer.c */; };
+		1311F462241FFF2A0051D6BF /* rng.c in Sources */ = {isa = PBXBuildFile; fileRef = 1311F461241FFF2A0051D6BF /* rng.c */; };
+		1311F464241FFF3E0051D6BF /* linalg.c in Sources */ = {isa = PBXBuildFile; fileRef = 1311F463241FFF3E0051D6BF /* linalg.c */; };
+		1311F466241FFF500051D6BF /* sort.c in Sources */ = {isa = PBXBuildFile; fileRef = 1311F465241FFF500051D6BF /* sort.c */; };
+		1311F473241FFFAF0051D6BF /* hash_map.c in Sources */ = {isa = PBXBuildFile; fileRef = 1311F472241FFFAF0051D6BF /* hash_map.c */; };
+		1311F475241FFFC00051D6BF /* gui.c in Sources */ = {isa = PBXBuildFile; fileRef = 1311F474241FFFC00051D6BF /* gui.c */; };
+		135E555C24C768050087F867 /* title_state.c in Sources */ = {isa = PBXBuildFile; fileRef = 135E555B24C768050087F867 /* title_state.c */; };
+		135E555E24C7684E0087F867 /* play_state.c in Sources */ = {isa = PBXBuildFile; fileRef = 135E555D24C7684E0087F867 /* play_state.c */; };
+		135E556024C8A49B0087F867 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 135E555F24C8A49B0087F867 /* Shaders.metal */; };
+		135E556424C8A5AD0087F867 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 135E556324C8A5AD0087F867 /* data */; };
+		1382243924C763D200827D1B /* game.c in Sources */ = {isa = PBXBuildFile; fileRef = 1382243724C763D200827D1B /* game.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1311F420241FFC550051D6BF /* satin-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "satin-Bridging-Header.h"; sourceTree = "<group>"; };
+		1311F421241FFC550051D6BF /* os_swift_interop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = os_swift_interop.h; sourceTree = "<group>"; };
+		1311F439241FFD1B0051D6BF /* satin_mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = satin_mac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1311F43B241FFD1B0051D6BF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		1311F43D241FFD1B0051D6BF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		1311F43F241FFD1E0051D6BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1311F442241FFD1E0051D6BF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		1311F444241FFD1E0051D6BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1311F445241FFD1E0051D6BF /* satin_mac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = satin_mac.entitlements; sourceTree = "<group>"; };
+		1311F457241FFEC30051D6BF /* os.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = os.m; path = ../../libs/satin/src/os/osx/os.m; sourceTree = "<group>"; };
+		1311F459241FFEDB0051D6BF /* window.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = window.m; path = ../../libs/satin/src/window/osx_metal/window.m; sourceTree = "<group>"; };
+		1311F45B241FFEEA0051D6BF /* engine.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = engine.c; path = ../../libs/satin/src/engine.c; sourceTree = "<group>"; };
+		1311F45D241FFF020051D6BF /* graphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = graphics.m; path = ../../libs/satin/src/graphics/metal/graphics.m; sourceTree = "<group>"; };
+		1311F45F241FFF190051D6BF /* buffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = buffer.c; path = ../../libs/vlib/src/libs/memory/buffer.c; sourceTree = "<group>"; };
+		1311F461241FFF2A0051D6BF /* rng.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rng.c; path = ../../libs/vlib/src/libs/rng/rng.c; sourceTree = "<group>"; };
+		1311F463241FFF3E0051D6BF /* linalg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = linalg.c; path = ../../libs/vlib/src/libs/linalg/linalg.c; sourceTree = "<group>"; };
+		1311F465241FFF500051D6BF /* sort.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sort.c; path = ../../libs/vlib/src/libs/sort/sort.c; sourceTree = "<group>"; };
+		1311F472241FFFAF0051D6BF /* hash_map.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hash_map.c; path = ../../libs/vlib/src/libs/hash_map/hash_map.c; sourceTree = "<group>"; };
+		1311F474241FFFC00051D6BF /* gui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gui.c; path = ../../libs/satin/src/gui/gui.c; sourceTree = "<group>"; };
+		135E555B24C768050087F867 /* title_state.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = title_state.c; path = ../../title_state.c; sourceTree = "<group>"; };
+		135E555D24C7684E0087F867 /* play_state.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = play_state.c; path = ../../play_state.c; sourceTree = "<group>"; };
+		135E555F24C8A49B0087F867 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = Shaders.metal; path = ../../libs/satin/data/Shaders.metal; sourceTree = "<group>"; };
+		135E556324C8A5AD0087F867 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = ../../data; sourceTree = "<group>"; };
+		1382243724C763D200827D1B /* game.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = game.c; path = ../../game.c; sourceTree = "<group>"; };
+		1382243824C763D200827D1B /* game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = game.h; path = ../../game.h; sourceTree = "<group>"; };
+		138FF4CA23B665C80028F056 /* ViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewDelegate.swift; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1311F436241FFD1B0051D6BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1311F43A241FFD1B0051D6BF /* satin_mac */ = {
+			isa = PBXGroup;
+			children = (
+				1311F43B241FFD1B0051D6BF /* AppDelegate.swift */,
+				1311F43D241FFD1B0051D6BF /* ViewController.swift */,
+				1311F43F241FFD1E0051D6BF /* Assets.xcassets */,
+				1311F441241FFD1E0051D6BF /* Main.storyboard */,
+				1311F444241FFD1E0051D6BF /* Info.plist */,
+				1311F445241FFD1E0051D6BF /* satin_mac.entitlements */,
+			);
+			path = satin_mac;
+			sourceTree = "<group>";
+		};
+		138FF4AA23B662C70028F056 = {
+			isa = PBXGroup;
+			children = (
+				135E556324C8A5AD0087F867 /* data */,
+				1311F421241FFC550051D6BF /* os_swift_interop.h */,
+				1311F420241FFC550051D6BF /* satin-Bridging-Header.h */,
+				138FF4CA23B665C80028F056 /* ViewDelegate.swift */,
+				138FF51223B66C450028F056 /* game */,
+				138FF4F723B66BB50028F056 /* data */,
+				138FF4DA23B668720028F056 /* vlib */,
+				138FF4D923B6685D0028F056 /* satin */,
+				1311F43A241FFD1B0051D6BF /* satin_mac */,
+				138FF4B423B662C80028F056 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		138FF4B423B662C80028F056 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1311F439241FFD1B0051D6BF /* satin_mac.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		138FF4D923B6685D0028F056 /* satin */ = {
+			isa = PBXGroup;
+			children = (
+				1311F474241FFFC00051D6BF /* gui.c */,
+				1311F45D241FFF020051D6BF /* graphics.m */,
+				1311F45B241FFEEA0051D6BF /* engine.c */,
+				1311F459241FFEDB0051D6BF /* window.m */,
+				1311F457241FFEC30051D6BF /* os.m */,
+			);
+			name = satin;
+			sourceTree = "<group>";
+		};
+		138FF4DA23B668720028F056 /* vlib */ = {
+			isa = PBXGroup;
+			children = (
+				1311F472241FFFAF0051D6BF /* hash_map.c */,
+				1311F465241FFF500051D6BF /* sort.c */,
+				1311F463241FFF3E0051D6BF /* linalg.c */,
+				1311F461241FFF2A0051D6BF /* rng.c */,
+				1311F45F241FFF190051D6BF /* buffer.c */,
+			);
+			name = vlib;
+			sourceTree = "<group>";
+		};
+		138FF4F723B66BB50028F056 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				135E555F24C8A49B0087F867 /* Shaders.metal */,
+			);
+			name = data;
+			sourceTree = "<group>";
+		};
+		138FF51223B66C450028F056 /* game */ = {
+			isa = PBXGroup;
+			children = (
+				135E555D24C7684E0087F867 /* play_state.c */,
+				135E555B24C768050087F867 /* title_state.c */,
+				1382243724C763D200827D1B /* game.c */,
+				1382243824C763D200827D1B /* game.h */,
+			);
+			name = game;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1311F438241FFD1B0051D6BF /* satin_mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1311F446241FFD1E0051D6BF /* Build configuration list for PBXNativeTarget "satin_mac" */;
+			buildPhases = (
+				1311F435241FFD1B0051D6BF /* Sources */,
+				1311F436241FFD1B0051D6BF /* Frameworks */,
+				1311F437241FFD1B0051D6BF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = satin_mac;
+			productName = satin_mac;
+			productReference = 1311F439241FFD1B0051D6BF /* satin_mac.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		138FF4AB23B662C70028F056 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1130;
+				LastUpgradeCheck = 1130;
+				ORGANIZATIONNAME = "Vidar Nelson";
+				TargetAttributes = {
+					1311F438241FFD1B0051D6BF = {
+						CreatedOnToolsVersion = 11.3.1;
+						LastSwiftMigration = 1130;
+					};
+				};
+			};
+			buildConfigurationList = 138FF4AE23B662C70028F056 /* Build configuration list for PBXProject "satin" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 138FF4AA23B662C70028F056;
+			productRefGroup = 138FF4B423B662C80028F056 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1311F438241FFD1B0051D6BF /* satin_mac */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1311F437241FFD1B0051D6BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				135E556424C8A5AD0087F867 /* data in Resources */,
+				1311F440241FFD1E0051D6BF /* Assets.xcassets in Resources */,
+				1311F443241FFD1E0051D6BF /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1311F435241FFD1B0051D6BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1311F458241FFEC30051D6BF /* os.m in Sources */,
+				1311F45C241FFEEA0051D6BF /* engine.c in Sources */,
+				1311F43E241FFD1B0051D6BF /* ViewController.swift in Sources */,
+				135E555E24C7684E0087F867 /* play_state.c in Sources */,
+				135E556024C8A49B0087F867 /* Shaders.metal in Sources */,
+				1311F460241FFF190051D6BF /* buffer.c in Sources */,
+				1311F464241FFF3E0051D6BF /* linalg.c in Sources */,
+				135E555C24C768050087F867 /* title_state.c in Sources */,
+				1311F45A241FFEDB0051D6BF /* window.m in Sources */,
+				1311F475241FFFC00051D6BF /* gui.c in Sources */,
+				1311F43C241FFD1B0051D6BF /* AppDelegate.swift in Sources */,
+				1311F473241FFFAF0051D6BF /* hash_map.c in Sources */,
+				1382243924C763D200827D1B /* game.c in Sources */,
+				1311F44B241FFD450051D6BF /* ViewDelegate.swift in Sources */,
+				1311F45E241FFF020051D6BF /* graphics.m in Sources */,
+				1311F462241FFF2A0051D6BF /* rng.c in Sources */,
+				1311F466241FFF500051D6BF /* sort.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		1311F441241FFD1E0051D6BF /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1311F442241FFD1E0051D6BF /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1311F447241FFD1E0051D6BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = satin_mac/satin_mac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = YNBMRMVF9D;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = satin_mac/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "vidarn.satin-mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		1311F448241FFD1E0051D6BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = satin_mac/satin_mac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = YNBMRMVF9D;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = satin_mac/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "vidarn.satin-mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		138FF4C123B662CA0028F056 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "satin-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				USER_HEADER_SEARCH_PATHS = (
+					/Users/vidarn/Documents/tiny_heart/libs/satin/src,
+					/Users/vidarn/Documents/tiny_heart/libs/vlib/src/libs,
+				);
+			};
+			name = Debug;
+		};
+		138FF4C223B662CA0028F056 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "satin-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				USER_HEADER_SEARCH_PATHS = (
+					/Users/vidarn/Documents/tiny_heart/libs/satin/src,
+					/Users/vidarn/Documents/tiny_heart/libs/vlib/src/libs,
+				);
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1311F446241FFD1E0051D6BF /* Build configuration list for PBXNativeTarget "satin_mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1311F447241FFD1E0051D6BF /* Debug */,
+				1311F448241FFD1E0051D6BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		138FF4AE23B662C70028F056 /* Build configuration list for PBXProject "satin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				138FF4C123B662CA0028F056 /* Debug */,
+				138FF4C223B662CA0028F056 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 138FF4AB23B662C70028F056 /* Project object */;
+}
